@@ -1,42 +1,46 @@
+import { useEffect, useState } from "react"
+import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
+import { services } from "../../services"
 
-export default function SessionsPage() {
+export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieShowTime}) {
+    const { id: movieID } = useParams()
+
+    console.log(movieShowTime)
+    useEffect(() => {
+        (async function initialize() {
+            const response = await services.getMovieShowTimes(movieID)
+            const { days, posterURL, title } = await response.json()
+            setMovieShowTime(prev => ({ days, posterURL, title }))
+        })()
+    }, [])
+    console.log(movieShowTime)
+
 
     return (
         <PageContainer>
             Selecione o horário
-            <div>
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
+            {movieShowTime?.days?.length > 0 && movieShowTime.days.map((item) => (
+                <div key={item.id}>
+                    <SessionContainer>
+                        {item.weekday} - {item.date}
+                        <ButtonsContainer >
+                        {item.showtimes.map(showtime => (
+                                <Link key={showtime.id} to={`/assentos/${showtime.id}`}>
+                                    <button onClick={()=>setChosenTimeID(showtime.id)}>{showtime.name}</button>
+                                </Link>
+                        ))}
+                        </ButtonsContainer>
+                    </SessionContainer>
 
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-
-                <SessionContainer>
-                    Sexta - 03/03/2023
-                    <ButtonsContainer>
-                        <button>14:00</button>
-                        <button>15:00</button>
-                    </ButtonsContainer>
-                </SessionContainer>
-            </div>
-
+                </div>
+            ))}
             <FooterContainer>
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={movieShowTime.posterURL} alt={movieShowTime.title} />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
+                    <p>{movieShowTime.title}</p>
                 </div>
             </FooterContainer>
 
