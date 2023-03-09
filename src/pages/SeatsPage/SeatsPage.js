@@ -6,9 +6,10 @@ import { services } from "../../services"
 export default function SeatsPage({ setSelectedSeatsInfo }) {
     const { id: sessionID } = useParams()
     const [seatsInfo, setSeatsInfo] = useState([])
+    const [name, setName] = useState([])
+    const [cpf, setCpf] = useState([])
     const [selectedSeat, setSelectedSeats] = useState([])
-    const nameRef = useRef('')
-    const cpfRef = useRef('')
+
 
     useEffect(() => {
         (async function initialize() {
@@ -31,8 +32,6 @@ export default function SeatsPage({ setSelectedSeatsInfo }) {
         }))}
         async function handleSubmit(e) {
             // e.preventDefault()
-            const name = nameRef.current.value
-            const cpf = cpfRef.current.value
             const filteredSelectedSeat = selectedSeat.filter((item, index) => {
                 console.log(index)
                 return item.isSelected === true
@@ -52,7 +51,7 @@ export default function SeatsPage({ setSelectedSeatsInfo }) {
 
                 <SeatsContainer >
                     {selectedSeat.map((item) => (
-                        <SeatItem key={item.id} onClick={() => toggleSeat(item.id)} isAvailable={item.isAvailable} isSelected={item.isSelected}>{item.name}</SeatItem>
+                        <SeatItem key={item.id} data-test="seat" onClick={() => toggleSeat(item.id)} isAvailable={item.isAvailable} isSelected={item.isSelected}>{item.name}</SeatItem>
                     ))}
                 </SeatsContainer>
 
@@ -73,15 +72,15 @@ export default function SeatsPage({ setSelectedSeatsInfo }) {
 
                 <FormContainer >
                     Nome do Comprador:
-                    <input ref={nameRef} placeholder="Digite seu nome..." />
+                    <input data-test="client-name" value={name} onChange={e=>setName(e.target.value)} placeholder="Digite seu nome..." />
 
                     CPF do Comprador:
-                    <input ref={cpfRef} placeholder="Digite seu CPF..." />
+                    <input  data-test="client-cpf" value={cpf} onChange={e=>setCpf(e.target.value)}placeholder="Digite seu CPF..." />
 
-                    <Link to={'/sucesso'}> <button onClick={(e) => handleSubmit(e)} >Reservar Assento(s)</button></Link>
+                    <Link to={'/sucesso'}> <button data-test="book-seat-btn" onClick={(e) => handleSubmit(e)} >Reservar Assento(s)</button></Link>
                 </FormContainer>
 
-                <FooterContainer>
+                <FooterContainer data-test="footer">
                     <div>
                         <img src={seatsInfo.posterURL} alt="poster" />
                     </div>

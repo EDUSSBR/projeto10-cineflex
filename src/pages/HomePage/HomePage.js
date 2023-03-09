@@ -23,8 +23,8 @@ export default function HomePage({setSessionID}) {
 
             <ListContainer>
                 {moviesList.map(item =>
-                    <Link key={item.id} to={`/sessoes/${item.id}`}>
-                    <MovieContainer  >
+                    <Link  key={item.id} to={`/sessoes/${item.id}`}>
+                    <MovieContainer data-test="movie">
                         <img src={item.url} alt={item.title} />
                     </MovieContainer>
                     </Link>
