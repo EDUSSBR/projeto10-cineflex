@@ -1,26 +1,35 @@
+import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
+import { services } from "../../services"
 
-export default function HomePage() {
+export default function HomePage({setSessionID}) {
+    const [moviesList, setMoviesList] = useState([])
+    useEffect(() => {
+        (async function initialize() {
+            const response = await services.getMoviesList()
+            const json = await response.json()
+            const movies = json.reduce((acc, item) => {
+                acc.push({ id: item.id, url: item.posterURL, title: item.title })
+                return acc
+            }, [])
+            setMoviesList(prev => movies)
+        })()
+    }, [])  
+    
     return (
         <PageContainer>
             Selecione o filme
 
             <ListContainer>
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
+                {moviesList.map(item =>
+                    <Link key={item.id} to={`/sessoes/${item.id}`}>
+                    <MovieContainer  >
+                        <img src={item.url} alt={item.title} />
+                    </MovieContainer>
+                    </Link>
+                )}
 
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
-
-                <MovieContainer>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster"/>
-                </MovieContainer>
             </ListContainer>
 
         </PageContainer>
