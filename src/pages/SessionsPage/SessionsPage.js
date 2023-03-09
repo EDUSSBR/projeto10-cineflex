@@ -5,8 +5,6 @@ import { services } from "../../services"
 
 export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieShowTime}) {
     const { id: movieID } = useParams()
-
-    console.log(movieShowTime)
     useEffect(() => {
         (async function initialize() {
             const response = await services.getMovieShowTimes(movieID)
@@ -14,9 +12,6 @@ export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieSh
             setMovieShowTime(prev => ({ days, posterURL, title }))
         })()
     }, [])
-    console.log(movieShowTime)
-
-
     return (
         <PageContainer>
             Selecione o horário
@@ -27,7 +22,7 @@ export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieSh
                         <ButtonsContainer >
                         {item.showtimes.map(showtime => (
                                 <Link  key={showtime.id} to={`/assentos/${showtime.id}`}>
-                                    <button data-test="showtime"  onClick={()=>setChosenTimeID(showtime.id)}>{showtime.name}</button>
+                                    <button data-test="showtime"  onClick={()=>setChosenTimeID({id: showtime.id, time: showtime.name})}>{showtime.name}</button>
                                 </Link>
                         ))}
                         </ButtonsContainer>

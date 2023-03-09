@@ -3,14 +3,12 @@ import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
 import { services } from "../../services"
 
-export default function SeatsPage({ setSelectedSeatsInfo }) {
+export default function SeatsPage({ setSelectedSeatsInfo, time }) {
     const { id: sessionID } = useParams()
     const [seatsInfo, setSeatsInfo] = useState([])
     const [name, setName] = useState([])
     const [cpf, setCpf] = useState([])
     const [selectedSeat, setSelectedSeats] = useState([])
-
-
     useEffect(() => {
         (async function initialize() {
             const response = await services.getSeats(sessionID)
@@ -31,19 +29,15 @@ export default function SeatsPage({ setSelectedSeatsInfo }) {
             return item
         }))}
         async function handleSubmit(e) {
-            // e.preventDefault()
             const filteredSelectedSeat = selectedSeat.filter((item, index) => {
-                console.log(index)
                 return item.isSelected === true
             })
             const idArray = filteredSelectedSeat.map(item => item.id)
             const seatArray = filteredSelectedSeat.map(item => item.name)
-            console.log(filteredSelectedSeat)
             const isSomeInfoMissing = name.length === 0 || cpf.length === 0 || idArray.length === 0;
             if (isSomeInfoMissing) return;
             let body = { name, cpf, ids: idArray, seats: seatArray }
             setSelectedSeatsInfo(body)
-
         }
         return (
             <PageContainer>
@@ -86,7 +80,7 @@ export default function SeatsPage({ setSelectedSeatsInfo }) {
                     </div>
                     <div>
                         <p>{seatsInfo.title}</p>
-                        <p>{seatsInfo.day} - 14h00</p>
+                        <p>{seatsInfo.day} - {time}</p>
                     </div>
                 </FooterContainer>
 
