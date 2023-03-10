@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import styled from "styled-components"
-import { services } from "../../services"
+import { services } from "../services"
 
-export default function SeatsPage({ setSelectedSeatsInfo, time }) {
+export default function SeatsPage({ setSelectedSeatsInfo, time,setLocation }) {
     const { id: sessionID } = useParams()
     const [seatsInfo, setSeatsInfo] = useState([])
     const [name, setName] = useState([])
     const [cpf, setCpf] = useState([])
     const [selectedSeat, setSelectedSeats] = useState([])
+    const location = useLocation()
+    setLocation(location.pathname)
     useEffect(() => {
         (async function initialize() {
             const response = await services.getSeats(sessionID)

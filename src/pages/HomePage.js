@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
-import { services } from "../../services"
+import { services } from "../services"
 
-export default function HomePage({setSessionID}) {
+export default function HomePage({setSessionID, setLocation}) {
     const [moviesList, setMoviesList] = useState([])
+    const location = useLocation()
+    setLocation(location.pathname)
     useEffect(() => {
         (async function initialize() {
             const response = await services.getMoviesList()

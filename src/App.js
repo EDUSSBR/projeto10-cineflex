@@ -1,13 +1,16 @@
 // import { BrowserRouter, Route, Routes } from "react-router-dom"
 import styled from "styled-components"
-import HomePage from "./pages/HomePage/HomePage"
-import SeatsPage from "./pages/SeatsPage/SeatsPage"
-import SessionsPage from "./pages/SessionsPage/SessionsPage"
-import SuccessPage from "./pages/SuccessPage/SuccessPage"
+import HomePage from "./pages/HomePage"
+import SeatsPage from "./pages/SeatsPage"
+import SessionsPage from "./pages/SessionsPage"
+import SuccessPage from "./pages/SuccessPage"
+import backButton from "./assets/Arrow.svg"
 import {
     BrowserRouter,
     Routes,
     Route,
+    Link,
+    useLocation,
 } from "react-router-dom";
 import { useEffect, useState } from "react"
 import { services } from "./services"
@@ -17,11 +20,12 @@ export default function App() {
     const [movieShowTime, setMovieShowTime] = useState([])
     const [selectedSeatInfo, setSelectedSeatsInfo] = useState(null)
     const [goToSucessPage, setGoToSucessPage] = useState(null)
+    const [location, setLocation] = useState(null)
     let filteredMovieShowTime = []
     for (let i = 0; i < movieShowTime?.days?.length; i++) {
         for (let showtime of movieShowTime?.days[i]?.showtimes) {
             if (showtime.id === Number(chosenTimeID.id)) {
-                filteredMovieShowTime = { time:showtime.name ,date: movieShowTime.days[i].date, movie: movieShowTime.title, time: showtime.name }
+                filteredMovieShowTime = { time: showtime.name, date: movieShowTime.days[i].date, movie: movieShowTime.title, time: showtime.name }
                 break;
             }
         }
@@ -38,26 +42,34 @@ export default function App() {
             })()
         }
     }, [selectedSeatInfo, goToSucessPage])
-
     return (
         <>
             <BrowserRouter>
+                {location !== '/' && <Link to={'/'}><BackButton data-test="go-home-header-btn" src={backButton} /></Link>}
                 <NavContainer>CINEFLEX</NavContainer>
                 <Routes>
-                    <Route path="/" element={<HomePage />}></Route>
-                    <Route path="/sessoes/:id" element={movieShowTime && <SessionsPage
 
+                    <Route path="/" element={<HomePage setLocation={setLocation} />}></Route>
+                    <Route path="/sessoes/:id" element={movieShowTime && <SessionsPage
+                        setLocation={setLocation}
                         movieShowTime={movieShowTime}
                         setMovieShowTime={setMovieShowTime}
                         setChosenTimeID={setChosenTimeID} />}></Route>
-                    <Route path="/assentos/:id" element={<SeatsPage setSelectedSeatsInfo={setSelectedSeatsInfo} time={filteredMovieShowTime.time}/>}></Route>
-                    <Route path="/sucesso" element={goToSucessPage && filteredMovieShowTime && selectedSeatInfo && <SuccessPage filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route>
+                    <Route path="/assentos/:id" element={<SeatsPage  setLocation={setLocation} setSelectedSeatsInfo={setSelectedSeatsInfo} time={filteredMovieShowTime.time} />}></Route>
+                    <Route path="/sucesso" element={goToSucessPage && filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route>
                 </Routes>
             </BrowserRouter>
         </>
 
     )
 }
+
+const BackButton = styled.img`
+    position: fixed;
+    top: 22px;
+    left: 18px;
+    z-index:1;
+`
 
 const NavContainer = styled.div`
     width: 100%;

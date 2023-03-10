@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 
-export default function SuccessPage({filteredMovieShowTime, selectedSeatInfo}) {
+export default function SuccessPage({filteredMovieShowTime, selectedSeatInfo,setLocation}) {
     const { date, movie, time } = filteredMovieShowTime || {}
     const { name, cpf, seats} = selectedSeatInfo || {}
+    const location = useLocation()
+    setLocation(location.pathname)
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>

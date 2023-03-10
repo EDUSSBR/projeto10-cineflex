@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useLocation, useParams } from "react-router-dom"
 import styled from "styled-components"
-import { services } from "../../services"
+import { services } from "../services"
 
-export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieShowTime}) {
+export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieShowTime,setLocation}) {
     const { id: movieID } = useParams()
+    const location = useLocation()
+    setLocation(location.pathname)
     useEffect(() => {
         (async function initialize() {
             const response = await services.getMovieShowTimes(movieID)
