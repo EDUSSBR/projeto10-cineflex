@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { services } from "../services"
 
-export default function HomePage({setSessionID, setLocation}) {
+export default function HomePage({setLocation}) {
     const [moviesList, setMoviesList] = useState([])
     const location = useLocation()
     setLocation(location.pathname)
@@ -22,7 +22,6 @@ export default function HomePage({setSessionID, setLocation}) {
     return (
         <PageContainer>
             Selecione o filme
-
             <ListContainer>
                 {moviesList.map(item =>
                     <Link  key={item.id} to={`/sessoes/${item.id}`}>
@@ -31,9 +30,7 @@ export default function HomePage({setSessionID, setLocation}) {
                     </MovieContainer>
                     </Link>
                 )}
-
             </ListContainer>
-
         </PageContainer>
     )
 }

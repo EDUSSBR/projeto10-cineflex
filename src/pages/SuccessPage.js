@@ -1,11 +1,17 @@
 import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
+import { generateObjFromNameAndCpf } from "../genUtil"
 
-export default function SuccessPage({filteredMovieShowTime, selectedSeatInfo,setLocation}) {
+export default function SuccessPage({ filteredMovieShowTime, selectedSeatInfo, setLocation }) {
     const { date, movie, time } = filteredMovieShowTime || {}
-    const { name, cpf, seats} = selectedSeatInfo || {}
+    const { name, seats } = selectedSeatInfo || {}
+    let myObj = generateObjFromNameAndCpf(name)
     const location = useLocation()
     setLocation(location.pathname)
+    let arr = []
+    for (let item of myObj) {
+        arr.push(item)
+    }
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
@@ -17,16 +23,26 @@ export default function SuccessPage({filteredMovieShowTime, selectedSeatInfo,set
 
             <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
-                {seats?.map((item, index)=><p key={index} >Assento {item}</p> )}
+
+                {seats?.map((item, index) =>
+                    <p key={index} >Assento {item}</p>
+                )}
+
             </TextContainer>
 
             <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
-                <p>{name || null}</p>
-                <p>CPF: {cpf || null}</p>
+                {arr.map((item,) => {
+                    return(
+                    <div key={item.id}>
+                        <p>NOME: {item.nome || null}</p>
+                        <p>CPF: {item.cpf || null}</p>
+                    </div>)
+
+                })}
             </TextContainer>
             <Link data-test="go-home-btn" to="/">
-            <button>Voltar para Home</button>
+                <button>Voltar para Home</button>
             </Link>
         </PageContainer>
     )

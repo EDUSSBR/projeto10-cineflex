@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Link, useLocation, useParams } from "react-router-dom"
 import styled from "styled-components"
 import { services } from "../services"
 
-export default function SessionsPage({setChosenTimeID, setMovieShowTime, movieShowTime,setLocation}) {
+export default function SessionsPage({setChosenTimeID,movieShowTime=[], setMovieShowTime ,setLocation}) {
     const { id: movieID } = useParams()
     const location = useLocation()
     setLocation(location.pathname)

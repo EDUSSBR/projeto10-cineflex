@@ -6,21 +6,17 @@ import SessionsPage from "./pages/SessionsPage"
 import SuccessPage from "./pages/SuccessPage"
 import backButton from "./assets/Arrow.svg"
 import {
-    BrowserRouter,
     Routes,
     Route,
     Link,
-    useLocation,
 } from "react-router-dom";
-import { useEffect, useState } from "react"
-import { services } from "./services"
+import { useState } from "react"
 
 export default function App() {
     const [chosenTimeID, setChosenTimeID] = useState({})
     const [movieShowTime, setMovieShowTime] = useState([])
     const [selectedSeatInfo, setSelectedSeatsInfo] = useState(null)
-    const [goToSucessPage, setGoToSucessPage] = useState(null)
-    const [location, setLocation] = useState(null)
+    const [location, setLocation] = useState('/')
     let filteredMovieShowTime = []
     for (let i = 0; i < movieShowTime?.days?.length; i++) {
         for (let showtime of movieShowTime?.days[i]?.showtimes) {
@@ -30,21 +26,8 @@ export default function App() {
             }
         }
     }
-    useEffect(() => {
-        if (selectedSeatInfo !== null) {
-            (async function book() {
-                try {
-                    const response = await services.bookSeat({ name: selectedSeatInfo.name, cpf: selectedSeatInfo.cpf, ids: selectedSeatInfo.ids })
-                    setGoToSucessPage(await response.ok)
-                } catch (e) {
-                    console.log(e)
-                }
-            })()
-        }
-    }, [selectedSeatInfo, goToSucessPage])
     return (
         <>
-            <BrowserRouter>
                 {location !== '/' && <Link to={'/'}><BackButton data-test="go-home-header-btn" src={backButton} /></Link>}
                 <NavContainer>CINEFLEX</NavContainer>
                 <Routes>
@@ -55,10 +38,9 @@ export default function App() {
                         movieShowTime={movieShowTime}
                         setMovieShowTime={setMovieShowTime}
                         setChosenTimeID={setChosenTimeID} />}></Route>
-                    <Route path="/assentos/:id" element={<SeatsPage  setLocation={setLocation} setSelectedSeatsInfo={setSelectedSeatsInfo} time={filteredMovieShowTime.time} />}></Route>
-                    <Route path="/sucesso" element={goToSucessPage && filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route>
+                    <Route path="/assentos/:id" element={<SeatsPage setLocation={setLocation} setSelectedSeatsInfo={setSelectedSeatsInfo} time={filteredMovieShowTime.time} />}></Route>
+                    <Route path="/sucesso" element={filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route>
                 </Routes>
-            </BrowserRouter>
         </>
 
     )
