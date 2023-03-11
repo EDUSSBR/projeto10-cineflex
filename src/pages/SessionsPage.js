@@ -1,19 +1,6 @@
-import { useEffect } from "react"
-import { Link, useLocation, useParams } from "react-router-dom"
 import styled from "styled-components"
-import { services } from "../services"
 
-export default function SessionsPage({setChosenTimeID,movieShowTime=[], setMovieShowTime ,setLocation}) {
-    const { id: movieID } = useParams()
-    const location = useLocation()
-    setLocation(location.pathname)
-    useEffect(() => {
-        (async function initialize() {
-            const response = await services.getMovieShowTimes(movieID)
-            const { days, posterURL, title } = await response.json()
-            setMovieShowTime(prev => ({ days, posterURL, title }))
-        })()
-    }, [])
+export default function SessionsPage({ getSeats, setChosenTimeID, movieShowTime = [] }) {
     return (
         <PageContainer>
             Selecione o horário
@@ -22,11 +9,11 @@ export default function SessionsPage({setChosenTimeID,movieShowTime=[], setMovie
                     <SessionContainer data-test="movie-day">
                         {item.weekday} - {item.date}
                         <ButtonsContainer >
-                        {item.showtimes.map(showtime => (
-                                <Link  key={showtime.id} to={`/assentos/${showtime.id}`}>
-                                    <button data-test="showtime"  onClick={()=>setChosenTimeID({id: showtime.id, time: showtime.name})}>{showtime.name}</button>
-                                </Link>
-                        ))}
+                            {item.showtimes.map(showtime => (
+                                // <Link  to={`/assentos/${showtime.id}`}>
+                                    <button key={showtime.id} data-test="showtime" onClick={() => getSeats({ id: showtime.id, time: showtime.name })}>{showtime.name}</button>
+                                // </Link>
+                            ))}
                         </ButtonsContainer>
                     </SessionContainer>
 

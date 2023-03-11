@@ -1,34 +1,17 @@
-import { useEffect, useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
-import { services } from "../services"
 
-export default function HomePage({setLocation}) {
-    const [moviesList, setMoviesList] = useState([])
-    const location = useLocation()
-    setLocation(location.pathname)
-    useEffect(() => {
-        (async function initialize() {
-            const response = await services.getMoviesList()
-            const json = await response.json()
-            const movies = json.reduce((acc, item) => {
-                acc.push({ id: item.id, url: item.posterURL, title: item.title })
-                return acc
-            }, [])
-            setMoviesList(prev => movies)
-        })()
-    }, [])  
-    
+export default function HomePage({moviesList,getMovieShowTime}) {
     return (
         <PageContainer>
             Selecione o filme
             <ListContainer>
-                {moviesList.map(item =>
-                    <Link  key={item.id} to={`/sessoes/${item.id}`}>
-                    <MovieContainer data-test="movie">
+                {moviesList?.map(item =>
+                    <MovieContainer key={item.id}  onClick={(e)=>{        
+                        getMovieShowTime(item.id)
+                    }} data-test="movie">
                         <img src={item.url} alt={item.title} />
                     </MovieContainer>
-                    </Link>
                 )}
             </ListContainer>
         </PageContainer>

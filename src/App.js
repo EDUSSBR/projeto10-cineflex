@@ -11,36 +11,59 @@ import {
     Link,
 } from "react-router-dom";
 import { useState } from "react"
+import { useCinema } from "./hooks/useCinema"
 
 export default function App() {
-    const [chosenTimeID, setChosenTimeID] = useState({})
-    const [movieShowTime, setMovieShowTime] = useState([])
-    const [selectedSeatInfo, setSelectedSeatsInfo] = useState(null)
-    const [location, setLocation] = useState('/')
-    let filteredMovieShowTime = []
-    for (let i = 0; i < movieShowTime?.days?.length; i++) {
-        for (let showtime of movieShowTime?.days[i]?.showtimes) {
-            if (showtime.id === Number(chosenTimeID.id)) {
-                filteredMovieShowTime = { time: showtime.name, date: movieShowTime.days[i].date, movie: movieShowTime.title, time: showtime.name }
-                break;
-            }
-        }
-    }
+  const  { appState, getMovieShowTime, getSeats }= useCinema()
+  const { hashNameCpf,
+    includeName,
+    includeCpf,
+    selectedSeat,
+    handleSubmit,
+    filteredSelectedSeat,
+    toggleSeat, seatsInfo,
+    location,
+    setSeatsID,
+    setMovieID,
+    moviesList,
+    setLocation,
+    setChosenTimeID,
+    movieShowTime,
+    filteredMovieShowTime,
+    selectedSeatInfo,
+    setSelectedSeatsInfo,
+    setHashNameCpf,
+    chosenTimeID,
+     } = appState
     return (
         <>
-                {location !== '/' && <Link to={'/'}><BackButton data-test="go-home-header-btn" src={backButton} /></Link>}
-                <NavContainer>CINEFLEX</NavContainer>
-                <Routes>
-
-                    <Route path="/" element={<HomePage setLocation={setLocation} />}></Route>
-                    <Route path="/sessoes/:id" element={movieShowTime && <SessionsPage
+            {location !== '/' && <Link to={'/'}><BackButton data-test="go-home-header-btn" src={backButton} /></Link>}
+            <NavContainer>CINEFLEX</NavContainer>
+            <Routes>
+            getSeats
+                <Route path="/" element={<HomePage getMovieShowTime={getMovieShowTime} moviesList={moviesList} setLocation={setLocation} location={location} />}></Route>
+                <Route path="/sessoes/:id" element={movieShowTime && <SessionsPage
+                    movieShowTime={movieShowTime}
+                    setChosenTimeID={setChosenTimeID} />}></Route>
+                <Route path="/assentos/:id" element={
+                    <SeatsPage
+                    getSeats={getSeats}
+                        setSeatsID={setSeatsID}
                         setLocation={setLocation}
-                        movieShowTime={movieShowTime}
-                        setMovieShowTime={setMovieShowTime}
-                        setChosenTimeID={setChosenTimeID} />}></Route>
-                    <Route path="/assentos/:id" element={<SeatsPage setLocation={setLocation} setSelectedSeatsInfo={setSelectedSeatsInfo} time={filteredMovieShowTime.time} />}></Route>
-                    <Route path="/sucesso" element={filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route>
-                </Routes>
+                        setSelectedSeatsInfo={setSelectedSeatsInfo}
+                        time={filteredMovieShowTime?.time}
+                        selectedSeat={selectedSeat}
+                        seatsInfo={seatsInfo}
+                        toggleSeat={toggleSeat}
+                        filteredSelectedSeat={filteredSelectedSeat}
+                        handleSubmit={handleSubmit}
+                        includeName={includeName}
+                        includeCpf={includeCpf}
+                        hashNameCpf={hashNameCpf}
+                        setHashNameCpf={setHashNameCpf}
+                    />}></Route>
+                {/* <Route path="/sucesso" element={filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route> */}
+            </Routes>
         </>
 
     )
