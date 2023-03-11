@@ -1,13 +1,8 @@
-import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { generateObjFromNameAndCpf } from "../genUtil"
 
-export default function SuccessPage({ filteredMovieShowTime, selectedSeatInfo, setLocation }) {
-    const { date, movie, time } = filteredMovieShowTime || {}
-    const { name, seats } = selectedSeatInfo || {}
-    let myObj = generateObjFromNameAndCpf(name)
-    const location = useLocation()
-    setLocation(location.pathname)
+export default function SuccessPage({ date, time, chosenMovie, hashNameCpf, filteredSelectedSeats, resetApp }) {
+    let myObj = generateObjFromNameAndCpf(hashNameCpf)
     let arr = []
     for (let item of myObj) {
         arr.push(item)
@@ -17,15 +12,15 @@ export default function SuccessPage({ filteredMovieShowTime, selectedSeatInfo, s
             <h1>Pedido feito <br /> com sucesso!</h1>
             <TextContainer data-test="movie-info">
                 <strong><p>Filme e sessão</p></strong>
-                <p>{movie || null}</p>
+                <p>{chosenMovie || null}</p>
                 <p>{date || null} - {time}</p>
             </TextContainer>
 
             <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
 
-                {seats?.map((item, index) =>
-                    <p key={index} >Assento {item}</p>
+                {filteredSelectedSeats?.map((item, index) =>
+                    <p key={index} >Assento {item.name}</p>
                 )}
 
             </TextContainer>
@@ -33,17 +28,15 @@ export default function SuccessPage({ filteredMovieShowTime, selectedSeatInfo, s
             <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
                 {arr.map((item,) => {
-                    return(
-                    <div key={item.id}>
-                        <p>NOME: {item.nome || null}</p>
-                        <p>CPF: {item.cpf || null}</p>
-                    </div>)
+                    return (
+                        <div key={item.id}>
+                            <p>NOME: {item.nome || null}</p>
+                            <p>CPF: {item.cpf || null}</p>
+                        </div>)
 
                 })}
             </TextContainer>
-            <Link data-test="go-home-btn" to="/">
-                <button>Voltar para Home</button>
-            </Link>
+            <button data-test="go-home-btn" onClick={() => resetApp()}>Voltar para Home</button>
         </PageContainer>
     )
 }

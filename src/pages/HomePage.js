@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom"
 import styled from "styled-components"
 
-export default function HomePage({moviesList,getMovieShowTime}) {
+export default function HomePage({moviesList, getMovieShowTime}) {
     return (
         <PageContainer>
             Selecione o filme

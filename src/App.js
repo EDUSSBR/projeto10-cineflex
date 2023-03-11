@@ -1,4 +1,3 @@
-// import { BrowserRouter, Route, Routes } from "react-router-dom"
 import styled from "styled-components"
 import HomePage from "./pages/HomePage"
 import SeatsPage from "./pages/SeatsPage"
@@ -8,61 +7,54 @@ import backButton from "./assets/Arrow.svg"
 import {
     Routes,
     Route,
-    Link,
 } from "react-router-dom";
-import { useState } from "react"
 import { useCinema } from "./hooks/useCinema"
 
 export default function App() {
-  const  { appState, getMovieShowTime, getSeats }= useCinema()
-  const { hashNameCpf,
-    includeName,
-    includeCpf,
-    selectedSeat,
-    handleSubmit,
-    filteredSelectedSeat,
-    toggleSeat, seatsInfo,
-    location,
-    setSeatsID,
-    setMovieID,
-    moviesList,
-    setLocation,
-    setChosenTimeID,
-    movieShowTime,
-    filteredMovieShowTime,
-    selectedSeatInfo,
-    setSelectedSeatsInfo,
-    setHashNameCpf,
-    chosenTimeID,
-     } = appState
+    const { appState, getMovieShowTime, getSeats, includeName, includeCpf, toggleSeat, resetApp, handleSubmit } = useCinema()
+    const { hashNameCpf,
+        selectedSeats,
+        filteredSelectedSeats,
+        seatsInfo,
+        moviesList,
+        movieShowTime,
+        time,
+        date
+    } = appState
     return (
         <>
-            {location !== '/' && <Link to={'/'}><BackButton data-test="go-home-header-btn" src={backButton} /></Link>}
+            {appState.movieShowTime !== undefined && <BackButton onClick={() => resetApp()} data-test="go-home-header-btn" src={backButton} />}
             <NavContainer>CINEFLEX</NavContainer>
             <Routes>
-            getSeats
-                <Route path="/" element={<HomePage getMovieShowTime={getMovieShowTime} moviesList={moviesList} setLocation={setLocation} location={location} />}></Route>
+                getSeats
+                <Route path="/" element={<HomePage getMovieShowTime={getMovieShowTime} moviesList={moviesList} />}></Route>
                 <Route path="/sessoes/:id" element={movieShowTime && <SessionsPage
                     movieShowTime={movieShowTime}
-                    setChosenTimeID={setChosenTimeID} />}></Route>
+                    getSeats={getSeats} />}></Route>
                 <Route path="/assentos/:id" element={
                     <SeatsPage
-                    getSeats={getSeats}
-                        setSeatsID={setSeatsID}
-                        setLocation={setLocation}
-                        setSelectedSeatsInfo={setSelectedSeatsInfo}
-                        time={filteredMovieShowTime?.time}
-                        selectedSeat={selectedSeat}
-                        seatsInfo={seatsInfo}
-                        toggleSeat={toggleSeat}
-                        filteredSelectedSeat={filteredSelectedSeat}
-                        handleSubmit={handleSubmit}
                         includeName={includeName}
                         includeCpf={includeCpf}
+                        selectedSeats={selectedSeats}
+                        filteredSelectedSeats={filteredSelectedSeats}
+                        time={time}
+                        toggleSeat={toggleSeat}
+                        handleSubmit={handleSubmit}
                         hashNameCpf={hashNameCpf}
-                        setHashNameCpf={setHashNameCpf}
+
+                        posterURL={seatsInfo?.posterURL}
+                        title={seatsInfo?.title}
+                        day={seatsInfo?.day}
+
                     />}></Route>
-                {/* <Route path="/sucesso" element={filteredMovieShowTime && selectedSeatInfo && <SuccessPage setLocation={setLocation} filteredMovieShowTime={filteredMovieShowTime} selectedSeatInfo={selectedSeatInfo} />}></Route> */}
+                <Route path="/sucesso" element={<SuccessPage
+                    resetApp={resetApp}
+                    filteredSelectedSeats={filteredSelectedSeats}
+                    hashNameCpf={hashNameCpf}
+                    chosenMovie={movieShowTime?.title}
+                    time={time}
+                    date={date}
+                />}></Route>
             </Routes>
         </>
 

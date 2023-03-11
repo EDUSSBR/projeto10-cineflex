@@ -1,106 +1,11 @@
-import { useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
-import { generateObjFromNameAndCpf } from "../genUtil"
-import { services } from "../services"
-export default function SeatsPage({ getSeats, setSeatsID,setHashNameCpf,hashNameCpf,handleSubmit,filteredSelectedSeat=[],selectedSeat, toggleSeat,setSelectedSeatsInfo, time, setLocation,seatsInfo, selectedSeatsInfo }) {
-    // const { id: sessionID } = useParams()
-    // setSeatsID(sessionID)
-
-
-    // function includeName(name, id, i) {
-
-    //     setHashNameCpf(prev => prev[id] ? { ...prev, [id]: { ...prev[id], name } } : { ...prev, [id]: { name } })
-    // }
-    // function includeCpf(cpf, id, i) {
-    //     setHashNameCpf(prev => prev[id] ? { ...prev, [id]: { ...prev[id], cpf } } : { ...prev, [id]: { cpf } })
-    // }
-    // const [seatsInfo, setSeatsInfo] = useState([])
-    // const [name, setName] = useState()
-    // const [selectedSeat, setSelectedSeats] = useState([])
-    // const location = useLocation()
-    // const navigate = useNavigate()
-    // setLocation(location.pathname)
-    // function includeName(name, id, i) {
-
-    //     setName(prev => prev[id] ? { ...prev, [id]: { ...prev[id], name } } : { ...prev, [id]: { name } })
-    // }
-    // function includeCpf(cpf, id, i) {
-    //     setName(prev => prev[id] ? { ...prev, [id]: { ...prev[id], cpf } } : { ...prev, [id]: { cpf } })
-    // }
-    // function resetName(id) {
-    //     setName(prev => {
-    //         let obj = { ...prev }
-    //         Reflect.deleteProperty(obj, id);
-    //         return obj
-    //     })
-    // }
-    // useEffect(() => {
-    //     (async function initialize() {
-    //         const response = await services.getSeats(sessionID)
-    //         const { movie: { title, posterURL }, seats, day: { weekday }, id } = await response.json()
-    //         setSeatsInfo(prev => ({ title, seats, day: weekday, id, posterURL }))
-    //         setSelectedSeats(prev => (seats.map(item => ({ ...item, isSelected: false }))))
-    //     })()
-    // }, [])
-    // function toggleSeat(id) {
-    //     if (name===undefined){
-    //         setName({})
-    //     }
-    //     setSelectedSeats(prev => prev.map(item => {
-    //         if (item.id === id) {
-    //             if (item.isAvailable === false) {
-    //                 alert("Esse assento não está disponível")
-    //                 return item
-    //             }
-    //             if (item.isSelected === true) {
-    //                 let confirmation = window.confirm("Gostaria de remover o assento e apagar os dados?")
-    //                 if (!confirmation) {
-    //                     return item;
-    //                 } else {
-    //                     resetName(item.id)
-    //                 }
-    //             }
-    //             return { ...item, isSelected: !item.isSelected }
-    //         }
-    //         return item
-    //     }))
-    // }
-    // const filteredSelectedSeat = selectedSeat.filter((item, index) => {
-    //     return item.isSelected === true
-    // })
-    // async function handleSubmit(e) {
-    //     e.preventDefault()
-
-    //     const idArray = filteredSelectedSeat.map(item => item.id)
-    //     const seatArray = filteredSelectedSeat.map(item => item.name)
-    //     let body = { name, ids: idArray, seats: seatArray }
-    //     setSelectedSeatsInfo(body)
-
-    //     try {
-        //         let newObj = generateObjFromNameAndCpf(name)
-        //         let arr=[]
-    //         for (let item of newObj){
-    //             arr.push(item)
-    //         }
-    //         const response = await services.bookSeat({ compradores: arr, ids: idArray })
-    //         if (response.ok){
-    //             navigate('/sucesso')
-    //         } else {
-    //             console.log('não foi dessa vez amigo')
-    //         }
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // }
-
-    console.log("filtradossssssssssss",filteredSelectedSeat)
+export default function SeatsPage({title, day, posterURL, filteredSelectedSeats,toggleSeat,selectedSeats,includeName,includeCpf,hashNameCpf,handleSubmit, time }) {
     return (
         <PageContainer>
             Selecione o(s) assento(s)
 
             <SeatsContainer >
-                {selectedSeat?.map((item) => (
+                {selectedSeats?.map((item) => (
                     <SeatItem key={item.id} data-test="seat" onClick={(e) => 
                         toggleSeat(item.id)
                    } isAvailable={item.isAvailable} isSelected={item.isSelected}>{item.name}</SeatItem>
@@ -123,27 +28,25 @@ export default function SeatsPage({ getSeats, setSeatsID,setHashNameCpf,hashName
             </CaptionContainer> 
 
             <FormContainer onSubmit={(e) => handleSubmit(e)}>
-                {filteredSelectedSeat?.reduce((acc, item, i) => {
-                    console.log(item)
+                {filteredSelectedSeats?.reduce((acc, item, i) => {
                     acc.push(<InputItem key={item?.id}>
                         Nome do Comprador {item?.name}:
                         <input data-test="client-name" value={(hashNameCpf[item?.id]?.name || " ").trim()} onChange={e => includeName(e.target.value, item?.id)} placeholder="Digite seu nome..." required />
-
                         CPF do Comprador {item?.name}:
-                        <input data-test="client-cpf" value={(hashNameCpf[item?.id]?.cpf || " ").trim()} onChange={e => includeCpf(e.target.value, item?.id)} placeholder="Digite seu CPF..." required />
+                        <input data-test="client-cpf" type="number" minLength={11} value={(hashNameCpf[item?.id]?.cpf || " ").trim()} onChange={e => includeCpf(e.target.value, item?.id)} placeholder="Digite seu CPF..." required />
                     </InputItem>)
                     return acc
                 }, [])}
-                {filteredSelectedSeat?.length > 0 && <button data-test="book-seat-btn"  >Reservar Assento(s)</button>}
+                {filteredSelectedSeats?.length > 0 && <button data-test="book-seat-btn"  >Reservar Assento(s)</button>}
             </FormContainer>
 
             <FooterContainer data-test="footer">
                 <div>
-                    <img src={seatsInfo.posterURL} alt="poster" />
+                    <img src={posterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>{seatsInfo.title}</p>
-                    <p>{seatsInfo.day} - {time}</p>
+                    <p>{title}</p>
+                    <p>{day} - {time}</p>
                 </div>
             </FooterContainer>
 
@@ -198,10 +101,6 @@ const CaptionContainer = styled.div`
     justify-content: space-between;
     margin: 20px;
 `
-// background: #FBE192;
-// border: 1px solid #F7C52B;
-// background: ;
-// border: 1px solid #0E7D71;
 const CaptionCircle = styled.div`
     border: ${({ isAvailable, isSelected }) => {
         if (!isAvailable) {

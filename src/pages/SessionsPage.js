@@ -1,6 +1,5 @@
 import styled from "styled-components"
-
-export default function SessionsPage({ getSeats, setChosenTimeID, movieShowTime = [] }) {
+export default function SessionsPage({ getSeats, movieShowTime }) {
     return (
         <PageContainer>
             Selecione o horário
@@ -10,9 +9,7 @@ export default function SessionsPage({ getSeats, setChosenTimeID, movieShowTime 
                         {item.weekday} - {item.date}
                         <ButtonsContainer >
                             {item.showtimes.map(showtime => (
-                                // <Link  to={`/assentos/${showtime.id}`}>
-                                    <button key={showtime.id} data-test="showtime" onClick={() => getSeats({ id: showtime.id, time: showtime.name })}>{showtime.name}</button>
-                                // </Link>
+                                    <button key={showtime.id} data-test="showtime" onClick={() => getSeats(showtime.id, showtime.name, item.date )}>{showtime.name}</button>
                             ))}
                         </ButtonsContainer>
                     </SessionContainer>
