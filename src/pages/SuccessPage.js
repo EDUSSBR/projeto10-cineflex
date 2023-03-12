@@ -1,12 +1,6 @@
 import styled from "styled-components"
-import { generateObjFromNameAndCpf } from "../genUtil"
 
-export default function SuccessPage({ date, time, chosenMovie, hashNameCpf, filteredSelectedSeats, resetApp }) {
-    let myObj = generateObjFromNameAndCpf(hashNameCpf)
-    let arr = []
-    for (let item of myObj) {
-        arr.push(item)
-    }
+export default function SuccessPage({ date, time, chosenMovie, filteredSelectedSeats, resetApp,arr}) {
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
@@ -26,14 +20,13 @@ export default function SuccessPage({ date, time, chosenMovie, hashNameCpf, filt
             </TextContainer>
 
             <TextContainer data-test="client-info">
-                <strong><p>Comprador</p></strong>
-                {arr.map((item,) => {
+                <strong><p>Comprador{'('}es{')'}</p></strong>
+                {arr?.map((item) => {
                     return (
                         <div key={item.id}>
-                            <p>NOME: {item.nome || null}</p>
-                            <p>CPF: {item.cpf || null}</p>
+                            <p>Nome: {item.nome }</p>
+                            <p>CPF: {item.cpf }</p>
                         </div>)
-
                 })}
             </TextContainer>
             <button data-test="go-home-btn" onClick={() => resetApp()}>Voltar para Home</button>
