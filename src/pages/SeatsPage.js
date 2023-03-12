@@ -33,7 +33,7 @@ export default function SeatsPage({title, day, posterURL, filteredSelectedSeats,
                         Nome do Comprador {item?.name}:
                         <input data-test="client-name" value={(hashNameCpf[item?.id]?.name || " ").trim()} onChange={e => includeName(e.target.value, item?.id)} placeholder="Digite seu nome..." required />
                         CPF do Comprador {item?.name}:
-                        <input data-test="client-cpf" type="number" minLength={11} value={(hashNameCpf[item?.id]?.cpf || " ").trim()} onChange={e => includeCpf(e.target.value, item?.id)} placeholder="Digite seu CPF..." required />
+                        <input data-test="client-cpf" type="text" minLength={11} value={(hashNameCpf[item?.id]?.cpf || " ").trim()} onChange={e => includeCpf(e.target.value, item?.id)} placeholder="Digite seu CPF..." pattern="\d{11}" title="Por favor, digite um cpf valido contendo 11 digitos numéricos"required />
                     </InputItem>)
                     return acc
                 }, [])}

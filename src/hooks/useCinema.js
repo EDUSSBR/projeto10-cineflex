@@ -1,35 +1,110 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { generateObjFromNameAndCpf } from "../genUtil"
 import { services } from "../services"
 
 export function useCinema() {
-    const locationFromHook = useLocation()
-    const [location, setLocation] = useState(() => locationFromHook)
+    
+    const location = useLocation()
+    const wentToSucess = useRef(false)
+    if (location.pathname==='/sucesso'){
+        wentToSucess.current = true 
+    } else if (location.pathname === '/'){
+        wentToSucess.current= false
+    }
     const [appState, setAppState] = useState({})
     const navigate = useNavigate()
-    useEffect(()=>{
-        setLocation(locationFromHook)
-        console.log('rodou')
-    }, [appState])
+    useEffect(() => {
+        (async function updateScreen() {
+            let newState = {...appState}
+            let [, path, paramID] = location.pathname.split('/')
+            if (path === 'sessoes' && appState.showtimeList === undefined && !isNaN(paramID)) {
+                if (newState.movieShowTime!== undefined){
+                    newState = { moviesList: newState.moviesList, movieShowTime: newState.movieShowTime}
+                } else {   
+                    const response = await services.getMovieShowTimes(paramID)
+                    let showtimeList = await response.json()
+                    const { days, posterURL, title } = showtimeList
+                    newState = { ...newState, movieShowTime: { days, posterURL, title } }
+                }
+                setAppState(prev => newState)
+
+            } else if (path === 'assentos' && wentToSucess.current ){
+                navigate('/')
+            } else if (path === 'assentos' && appState.selectedSeats === undefined && appState.moviesList===undefined && !isNaN(paramID)) {
+                // newState = { moviesList: {...newState}.moviesList, }
+                const response = await services.getSeats(paramID)
+                const { movie: { title, posterURL }, seats, day: { weekday }, id } = await response.json()
+                newState = { ...newState, time: appState.time, date: appState.date, seatsInfo: { title, seats, day: weekday, id, posterURL }, selectedSeats: seats.map(item => ({ ...item, isSelected: false })) }
+                setAppState(prev => newState)
+                // setAppState(prev => ({ ...prev, time: appState.time, date:appState.date, seatsInfo: { title, seats, day: weekday, id, posterURL }, selectedSeats: seats.map(item => ({ ...item, isSelected: false })) })) 
+            } else if (path === 'sucesso' && appState.hashNameCpf !== undefined){
+                
+                let arr = []
+                let myObj = generateObjFromNameAndCpf(appState.hashNameCpf)
+                for (let item of myObj) {
+                    arr.push(item)
+                }
+                setAppState(prev=> ({...prev, finalObj: arr}))
+            } else if (path==='sucesso' && appState.hashName === undefined){
+                navigate('/')
+            }
+        })()
+    }, [location.pathname])
+
+    useEffect(() => {
+        (async function updateMissingItems() {
+            let [, path, paramID] = location.pathname.split('/')
+            let newState = { ...appState }
+            let date;
+            let time;
+            if (path === 'assentos' && appState.moviesList === undefined && appState.selectedSeats !== undefined) {
+   
+                const response = await services.getMoviesList()
+                let moviesList = await response.json()
+                let selectedMovie = moviesList.find(item => item.title === appState.seatsInfo.title)
+                const movies = moviesList.reduce((acc, item) => {
+                    acc.push({ id: item.id, url: item.posterURL, title: item.title })
+                    return acc
+                }, [])
+
+
+                const response1 = await services.getMovieShowTimes(selectedMovie.id)
+                let showtimeList = await response1.json()
+                const { days, posterURL, title } = showtimeList
+                newState = { ...newState, movieShowTime: { days, posterURL, title }, moviesList: movies }
+                for (let i = 0; i < newState.movieShowTime.days.length; i++) {
+                    for (let j = 0; j < newState.movieShowTime.days[i].showtimes.length; j++) {
+                        if (newState.movieShowTime.days[i].showtimes[j].id === Number(paramID)) {
+                            date = newState.movieShowTime.days[i].date
+                            time = newState.movieShowTime.days[i].showtimes[j].name
+                            break
+                        }
+                    }
+                }
+                newState = { ...newState, date, time }
+                setAppState(prev => newState)
+            }
+        })()
+    })
     useEffect(() => {
         (async function initialize() {
             if (location.pathname !== '/') return
-            const response = await services.getMoviesList()
-            let json = await response.json()
-            const movies = json.reduce((acc, item) => {
-                acc.push({ id: item.id, url: item.posterURL, title: item.title })
-                return acc
-            }, [])
-            setAppState(prev => ({ ...prev, moviesList: movies }))
+            if (appState.moviesList === undefined) {
+
+                const response = await services.getMoviesList()
+                let json = await response.json()
+                const movies = json.reduce((acc, item) => {
+                    acc.push({ id: item.id, url: item.posterURL, title: item.title })
+                    return acc
+                }, [])
+                setAppState(prev => ({ ...prev, moviesList: movies }))
+            }
 
         })()
     }, [location.pathname])
-    let params = useParams()
     function resetApp() {
-        let newState = { ...appState }
-        setAppState(prev => ({ moviesList: prev.moviesList }))
-        
+       setAppState(prev => ({ moviesList: prev.moviesList }))
         navigate('/')
     }
     async function getMovieShowTime(movieID) {
@@ -62,9 +137,7 @@ export function useCinema() {
         setAppState(prev => ({ ...prev, time, date, seatsInfo: { title, seats, day: weekday, id, posterURL }, selectedSeats: seats.map(item => ({ ...item, isSelected: false })) }))
         navigate(`/assentos/${seatsPageID}`)
     }
-    function resetHashNameCpf(id) {
-        setAppState(prev => ({ ...prev, hashNameCpf: Reflect.deleteProperty({ ...prev.hashNameCpf }, id) }))
-    }
+
     function toggleSeat(id) {
         let newState = { ...appState }
         if (newState.hashNameCpf === undefined) {
@@ -101,7 +174,6 @@ export function useCinema() {
         e.preventDefault()
         let newState = { ...appState }
         const idArray = newState.filteredSelectedSeats?.map(item => item.id)
-        const seatArray = newState.filteredSelectedSeats?.map(item => item.name)
         try {
             let newObj = generateObjFromNameAndCpf(newState.hashNameCpf)
             let arr = []
@@ -118,5 +190,6 @@ export function useCinema() {
             console.log(e)
         }
     }
+    console.log(appState)
     return { location, appState, getMovieShowTime, getSeats, includeCpf, includeName, toggleSeat, resetApp, handleSubmit }
 }

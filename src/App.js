@@ -19,7 +19,8 @@ export default function App() {
         moviesList,
         movieShowTime,
         time,
-        date
+        date,
+        finalObj
     } = appState
     return (
         <>
@@ -54,6 +55,7 @@ export default function App() {
                     chosenMovie={movieShowTime?.title}
                     time={time}
                     date={date}
+                    arr={finalObj}
                 />}></Route>
             </Routes>
         </>
